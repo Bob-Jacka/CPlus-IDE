@@ -2,6 +2,70 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMenu>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <qsplitter.h>
+
+/*
+ * Struct that represents upper menu in ide.
+ */
+struct UpperLevelMenu : QMenu {
+    Q_OBJECT
+
+private:
+    QPushButton* run_btn;
+    QPushButton* debug_btn;
+    QLayout* layout;
+
+public:
+    UpperLevelMenu() {
+        debug_btn = new QPushButton("debug");
+        run_btn = new QPushButton("run");
+        layout = new QHBoxLayout();
+
+        layout->addWidget(debug_btn);
+        layout->addWidget(run_btn);
+
+        this->setLayout(layout);
+        this->show();
+    }
+
+    ~UpperLevelMenu() {
+        delete this->debug_btn;
+        delete this->run_btn;
+        delete this->layout;
+    }
+};
+
+struct LeftMenu : QWidget {
+    Q_OBJECT
+
+public:
+
+    LeftMenu() {
+        this->setWindowTitle("Left menu");
+        this->show();
+    }
+
+    ~LeftMenu() {
+        //
+    }
+};
+
+struct RightMenu : QWidget {
+    Q_OBJECT
+
+public:
+    RightMenu() {
+        this->setWindowTitle("Right menu");
+        this->show();
+    }
+
+    ~RightMenu() {
+        //
+    }
+};
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -14,33 +78,42 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
-    QWidget* upperLevelMenu;
-    QWidget* leftMenu;
-    QWidget* rightMenu;
+    QMenu* upperLevelMenu;
+    LeftMenu* leftMenu;
+    RightMenu* rightMenu;
+    QSplitter* splitter;
+
+    QLayout* layout; //elements layout of main window.
+
+    Ui::MainWindow *ui;
 
     void positionate_upper_level_menu();
     void positionate_left_menu();
     void positionate_right_menu();
 
 public:
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void goSettings();
+    void goSettings() const;
 
-    void view_help_menu();
+    QWidget* getUpperLevelMenu() const;
+    QWidget* getLeftMenu() const;
+    QWidget* getRightMenu() const;
 
-    void hide_left_menu();  //hides left menu in main window of ide
-    void hide_right_menu(); //hides right menu in main window of ide
+    void setUpperLevelMenu(UpperLevelMenu*);
+    void setLeftMenu(LeftMenu*);
+    void setRightMenu(RightMenu*);
 
-    void init_upper_level_menu(); //initializing process for upper level menu
-    void init_left_menu();        //initializing process for left menu
-    void init_right_menu();       //initializing process for right menu
+    void view_help_menu() const;
 
-private:
-    Ui::MainWindow *ui;
+    void hide_upper_menu() const;
+    void hide_left_menu() const;  //hides left menu in main window of ide
+    void hide_right_menu() const; //hides right menu in main window of ide
 
 signals:
     //
 };
+
 #endif // MAINWINDOW_H

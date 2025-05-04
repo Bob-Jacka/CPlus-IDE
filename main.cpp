@@ -1,14 +1,11 @@
-#include "mainwindow.h"
-
 #include <QApplication>
+#include "componentfactory.h"
+#include "ExternalVariable.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    MainWindow mainWindow;
-
-    mainWindow.setWindowTitle("C+ compiler IDE");
-    mainWindow.resize(1600, 1080);
-    mainWindow.show();
+    ComponentFactory *factory = new ComponentFactory();
+    factory->construct_startup_window(startupWindow);
     return app.exec();
 }

@@ -1,16 +1,27 @@
 #include "mainwindow.hpp"
-#include <QPushButton>
-#include <QVBoxLayout>
-#include "ui_mainwindow.h"
+#include "ExternalVariable.h"
+#include "UtilFuncs.hpp"
+#include "componentfactory.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+#include <QVBoxLayout>
+
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
-    ui->setupUi(this);
-    this->init_upper_level_menu();
-    this->init_left_menu();
-    this->init_right_menu();
+    this->setWindowTitle("C+ compiler IDE");
+    this->resize(1600, 1080);
+    this->layout = new QVBoxLayout();
+
+    this->upperLevelMenu = new UpperLevelMenu();
+    this->leftMenu = new LeftMenu();
+    this->rightMenu = new RightMenu();
+    this->splitter = new QSplitter();
+
+    this->layout->addWidget(upperLevelMenu);
+    this->layout->addWidget(leftMenu);
+    this->layout->addWidget(rightMenu);
+    this->layout->addWidget(splitter);
+
+    this->setLayout(layout);
     println("Main window was initialized");
 }
 
@@ -19,47 +30,51 @@ MainWindow::~MainWindow()
     delete this->upperLevelMenu;
     delete this->leftMenu;
     delete this->rightMenu;
-    delete ui;
+    delete this->splitter;
+    // delete ui;
 }
 
-/*
- * Initialize main menu in main window.
- */
-void MainWindow::init_upper_level_menu()
-{
-    println("upper level menu is initialized");
-    this->upperLevelMenu = new QWidget();
-    QPushButton* run_btn = new QPushButton();
-    QPushButton* debug_btn = new QPushButton();
-    QHBoxLayout layout;
-    layout.addWidget(this->upperLevelMenu);
-    layout.addWidget(run_btn);
-    layout.addWidget(debug_btn);
-    this->upperLevelMenu->show();
+void MainWindow::goSettings() const {
+    ComponentFactory().construct_settings_window(settingsWindow);
 }
 
-/*
- * Initialize left menu in main window.
- */
-void MainWindow::init_left_menu()
-{
-    println("left menu is initialized");
-    this->leftMenu = new QWidget();
-    QPushButton *git_btn = new QPushButton("git");
-    QPushButton *todo_btn = new QPushButton("To do");
-    QVBoxLayout layout;
-    layout.addWidget(git_btn);
-    layout.addWidget(todo_btn);
-    this->leftMenu->show();
+void MainWindow::hide_left_menu() const {
+    this->leftMenu->hide();
 }
 
-/*
- * Initialize right menu in main window.
- */
-void MainWindow::init_right_menu()
+void MainWindow::hide_right_menu() const {
+    this->rightMenu->hide();
+}
+
+void MainWindow::hide_upper_menu() const {
+    this->upperLevelMenu->hide();
+}
+
+//Setters
+void MainWindow::setLeftMenu(LeftMenu* another)
 {
-    println("right menu is initialized");
-    this->rightMenu = new QWidget();
-    QVBoxLayout layout;
-    this->rightMenu->show();
+    this->leftMenu = another;
+}
+
+void MainWindow::setRightMenu(RightMenu* another)
+{
+    this->rightMenu = another;
+}
+
+void MainWindow::setUpperLevelMenu(UpperLevelMenu* another)
+{
+    this->upperLevelMenu = another;
+}
+
+//Getters
+QWidget* MainWindow::getLeftMenu() const {
+    return this->leftMenu;
+}
+
+QWidget* MainWindow::getRightMenu() const {
+    return this->rightMenu;
+}
+
+QWidget* MainWindow::getUpperLevelMenu() const {
+    return this->upperLevelMenu;
 }

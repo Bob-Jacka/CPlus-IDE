@@ -6,9 +6,14 @@
 class SettingsWindow : public QWidget
 {
     Q_OBJECT
+private:
+    //
 public:
     explicit SettingsWindow(QWidget *parent = nullptr);
+    ~SettingsWindow() {};
 
+    void apply_settings();
+    void close_window();
 signals:
     //
 };
