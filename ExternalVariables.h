@@ -2,6 +2,7 @@
 #define EXTERNALVARIABLE_H
 
 #include "componentfactory.h"
+#include "logger.hpp"
 #include "mainwindow.hpp"
 #include "settingswindow.hpp"
 #include "startwindow.h"
@@ -11,9 +12,9 @@ static MainWindow* mainWindow; //main window entitie
 static SettingsWindow* settingsWindow; //settings window entitie
 static StartWindow* startupWindow;
 
-//Layout entities
+static Logger *logger; //global instance of logger entitie
 
 //Factory entities
-static ComponentFactory* cfactory; //component factory entitie
+static ComponentFactory *cfactory; //component factory entitie
 
 #endif // EXTERNALVARIABLE_H

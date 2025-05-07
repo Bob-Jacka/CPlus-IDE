@@ -56,9 +56,13 @@ public:
 struct RightMenu : QWidget {
     Q_OBJECT
 
+private:
+    QPushButton *buildSystem;
+
 public:
     RightMenu() {
-        this->setWindowTitle("Right menu");
+        this->setWindowTitle(RIGHT_MENU_TITLE);
+        this->buildSystem = new QPushButton();
         this->show();
     }
 
@@ -83,13 +87,9 @@ private:
     RightMenu* rightMenu;
     QSplitter* splitter;
 
-    QLayout* layout; //elements layout of main window.
+    QLayout *mainLayout; //elements layout of main window.
 
     Ui::MainWindow *ui;
-
-    void positionate_upper_level_menu();
-    void positionate_left_menu();
-    void positionate_right_menu();
 
 public:
 
@@ -102,11 +102,11 @@ public:
     QWidget* getLeftMenu() const;
     QWidget* getRightMenu() const;
 
+    void view_help_menu() const;
+
     void setUpperLevelMenu(UpperLevelMenu*);
     void setLeftMenu(LeftMenu*);
     void setRightMenu(RightMenu*);
-
-    void view_help_menu() const;
 
     void hide_upper_menu() const;
     void hide_left_menu() const;  //hides left menu in main window of ide

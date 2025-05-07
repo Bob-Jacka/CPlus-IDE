@@ -22,3 +22,11 @@ inline void print_error(const string &msg)
 {
     cout << msg << endl;
 }
+
+/*
+ * Function for checking command line arguments and assigning.
+ */
+inline void check_cli_arguments()
+{
+    //
+}

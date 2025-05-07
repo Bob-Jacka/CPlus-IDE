@@ -17,9 +17,6 @@ public:
     StartWindow();
     ~StartWindow();
 
-    void load_file();
-    void load_files_to_load();
-
 signals:
     void createMain();
     void error();

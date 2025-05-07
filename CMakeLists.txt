@@ -16,7 +16,7 @@ qt_add_executable(untitled
     UtilFuncs.hpp
     componentfactory.h componentfactory.cpp
     startwindow.h startwindow.cpp
-    ExternalVariable.h
+    ExternalVariables.h
     IWindowTheme.cpp
 
 )
@@ -33,8 +33,8 @@ FetchContent_Declare(
 
 target_link_libraries(untitled
     PRIVATE
-        Qt::Core
-        Qt::Widgets
+        Qt6::Core
+        Qt6::Widgets
 )
 
 include(GNUInstallDirs)

@@ -4,8 +4,9 @@
 
 int main(int argc, char *argv[])
 {
+    check_cli_arguments();
     QApplication app(argc, argv);
-    ComponentFactory *factory = new ComponentFactory();
+    cfactory = new ComponentFactory();
     factory->construct_startup_window(startupWindow);
     return app.exec();
 }

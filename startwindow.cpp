@@ -1,25 +1,27 @@
 #include "startwindow.h"
 
-#include "componentfactory.h"
-#include <QMessageBox>
 #include <QVBoxLayout>
-#include <qpushbutton.h>
+#include "ComponentNames.hpp"
 #include "ExternalVariable.h"
+#include "componentfactory.h"
+#include <qpushbutton.h>
 
 void start_main_window();
-void errorStart();
 
 StartWindow::StartWindow() {
-    this->setWindowTitle("Startup menu");
+    this->setWindowTitle(WINDOW_NAME);
     this->setMinimumHeight(600);
     this->setMinimumWidth(600);
-    this->create_new_proj_btn = new QPushButton("Create project");
-    this->open_existing_proj_btn = new QPushButton("Open project");
+    this->create_new_proj_btn = new QPushButton(CREATE_PROJ);
+    this->open_existing_proj_btn = new QPushButton(OPEN_PROJ);
     this->layout = new QVBoxLayout();
 
     //Connect button with signals
-    connect(create_new_proj_btn, &QPushButton::clicked, start_main_window);
-    connect(open_existing_proj_btn, &QPushButton::clicked, errorStart);
+    connect(create_new_proj_btn, &QPushButton::clicked, create_new_project);
+    connect(create_new_proj_btn, &QPushButton::clicked, createMain);
+
+    connect(open_existing_proj_btn, &QPushButton::clicked, ComponentFactory::init_file_explorer());
+    connect(open_existing_proj_btn, &QPushButton::clicked, error);
 
     this->layout->addWidget(create_new_proj_btn);
     this->layout->addWidget(open_existing_proj_btn);
@@ -31,17 +33,23 @@ StartWindow::~StartWindow() {
     delete this->create_new_proj_btn;
     delete this->open_existing_proj_btn;
     delete this->layout;
+
+    startWindow = nullptr;
+    logger->log_message("Start window destroyed.");
 }
 
-void start_main_window() {
-    ComponentFactory().construct_main_window(mainWindow);
-}
-
-void errorStart()
+void create_new_project()
 {
-    QMessageBox* msgBox;
-    msgBox->setWindowTitle("Error");
-    msgBox->setText("Error placeholder");
-    msgBox->resize(50, 50);
-    msgBox->exec();
+    ComponentFactory().construct_new_project_window();
+}
+
+//Signals
+void StartWindow::createMain()
+{
+    logger->log_message();
+}
+
+void StartWindow::error()
+{
+    logger->log_error();
 }

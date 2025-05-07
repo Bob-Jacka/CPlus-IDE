@@ -1,14 +1,14 @@
 #include "mainwindow.hpp"
+#include <QVBoxLayout>
+#include "ComponentNames.hpp"
 #include "ExternalVariable.h"
 #include "UtilFuncs.hpp"
 #include "componentfactory.h"
 
-#include <QVBoxLayout>
-
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
-    this->setWindowTitle("C+ compiler IDE");
-    this->resize(1600, 1080);
+    this->setWindowTitle(IDE_TITLE);
+    this->resize(IDE_WIDTH, IDE_HEIGHT);
     this->layout = new QVBoxLayout();
 
     this->upperLevelMenu = new UpperLevelMenu();
@@ -16,13 +16,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     this->rightMenu = new RightMenu();
     this->splitter = new QSplitter();
 
-    this->layout->addWidget(upperLevelMenu);
-    this->layout->addWidget(leftMenu);
-    this->layout->addWidget(rightMenu);
-    this->layout->addWidget(splitter);
+    this->mainLayout->addWidget(upperLevelMenu);
+    this->mainLayout->addWidget(leftMenu);
+    this->mainLayout->addWidget(rightMenu);
+    this->mainLayout->addWidget(splitter);
 
     this->setLayout(layout);
-    println("Main window was initialized");
 }
 
 MainWindow::~MainWindow()
@@ -31,11 +30,18 @@ MainWindow::~MainWindow()
     delete this->leftMenu;
     delete this->rightMenu;
     delete this->splitter;
-    // delete ui;
+
+    mainWindow = nullptr;
+    logger->log_message("Main window destroyed");
 }
 
 void MainWindow::goSettings() const {
-    ComponentFactory().construct_settings_window(settingsWindow);
+    cfactory->construct_settings_window(settingsWindow);
+}
+
+void MainWindow::view_help_menu() const
+{
+    cfactory->construct_pop_up("Help menu", "IDE version is " + ide_version);
 }
 
 void MainWindow::hide_left_menu() const {
