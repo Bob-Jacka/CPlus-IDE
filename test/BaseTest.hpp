@@ -1,0 +1,7 @@
+class BaseTest
+{
+private:
+    //
+public:
+    //
+};
