@@ -43,8 +43,8 @@ Rectangle {
 
             TextField {
                 id: textField
-                width: 269
-                height: 21
+                width: parent.width
+                height: parent.height
                 color: "#787878"
                 background: Rectangle
                 font.pixelSize: 14

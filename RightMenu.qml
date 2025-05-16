@@ -7,8 +7,13 @@ Rectangle {
     id: right_menu
     width: 60
     height: 900
+    color: "black"
+
+    signal menu_visible
+    signal menu_hidden
 
     ColumnLayout {
+        id: right_menu_layout
         Button {
             id: git_btn
             text: "git"
@@ -18,5 +23,13 @@ Rectangle {
             id: todo_btn
             text: "to-do"
         }
+    }
+
+    onMenu_visible: {
+        //
+    }
+
+    onMenu_hidden: {
+        //
     }
 }

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
+// Start window
 Window {
     id: root
     width: 400
@@ -11,9 +12,18 @@ Window {
 
     signal create_proj
     signal open_proj
+    signal win_visible
+    signal win_hidden
+
+    Loader {
+        id: page_loader
+        anchors.fill: parent
+        source: "StartWindow.qml"
+    }
 
     ColumnLayout {
         anchors.fill: parent
+        Layout.alignment: Qt.AlignCenter
 
         Button {
             id: create_new_proj
@@ -24,7 +34,7 @@ Window {
             Layout.alignment: Qt.AlignHCenter
 
             onClicked: {
-                root.create_proj
+                page_loader.source = "App.qml"
             }
         }
 
@@ -37,18 +47,32 @@ Window {
             Layout.alignment: Qt.AlignHCenter
 
             onClicked: {
-               root.open_proj
+               page_loader.source = "App.qml"
             }
         }
     }
 
+    //image button
+    Image {
+        id: setting_window
+        source: "file"
+        anchors.top: parent.top
+        Layout.alignment: Qt.AlignHCenter
+    }
+
     onCreate_proj: {
-        start_window.close()
         App.show()
     }
 
     onOpen_proj: {
-        start_window.close()
         App.show()
+    }
+
+    onWin_visible: {
+        //
+    }
+
+    onWin_hidden: {
+        //
     }
 }

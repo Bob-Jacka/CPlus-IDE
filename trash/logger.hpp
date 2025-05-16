@@ -7,6 +7,7 @@ enum class Log_level { DEBUG, RELEASE, VERBOSE, WARN };
 
 class Logger
 {
+    QML_ELEMENT
 private:
     Log_level log_level = Log_level::DEBUG;
 

@@ -7,8 +7,11 @@ Rectangle {
     width: 900
     height: 60
 
-    RowLayout {
+    signal menu_visible
+    signal menu_hidden
 
+    RowLayout {
+        id: upper_menu_layout
         Button {
             id: run_btn
             text: "run"
@@ -18,5 +21,23 @@ Rectangle {
             id: debug_btn
             text: "debug"
         }
+
+        Button {
+            id: settings_btn
+            text: "settings"
+        }
+
+        Button {
+            id: search_btn
+            text: "search"
+        }
+    }
+
+    onMenu_visible: {
+        //
+    }
+
+    onMenu_hidden: {
+        //
     }
 }

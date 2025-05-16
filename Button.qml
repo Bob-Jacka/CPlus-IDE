@@ -36,7 +36,7 @@ Rectangle {
         }
     }
 
-    SequentialAnimation {
+    ParallelAnimation {
         id: button_animation
 
         NumberAnimation {
@@ -65,5 +65,13 @@ Rectangle {
             to: parent.usual_color
             duration: parent.animation_duration
         }
+    }
+
+    onClicked: {
+        //
+    }
+
+    onHovered: {
+        //
     }
 }

@@ -9,6 +9,8 @@ Item {
     implicitWidth: toggleText.width + toggleIndicator.width
     implicitHeight: 50
 
+    signal checked_toggle
+
     Label {
         id: toggleText
         text: parent.text
