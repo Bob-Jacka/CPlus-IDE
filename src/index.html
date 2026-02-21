@@ -1,39 +1,320 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
-  </head>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>C++ IDE (Tauri + JS)</title>
+  <style>
+    :root {
+      --bg: #1e1e1e;
+      --panel: #2b2b2b;
+      --panel2: #2a2a2a;
+      --text: #e6e6e6;
+      --muted: #a6a6a6;
+      --accent: #4a90e2;
+      --green: #57d17e;
+      --red: #e05555;
+      --code: #1e1e1e;
+      --border: #3a3a3a;
+    }
+    * { box-sizing: border-box; }
+    html, body, #app { height: 100%; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system; background: #111; color: var(--text); }
 
-  <body>
-    <main class="container">
-      <h1>Welcome to Tauri</h1>
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr 420px;
+      grid-template-rows: 56px 1fr 180px;
+      gap: 6px;
+      height: 100vh;
+      padding: 6px;
+    }
 
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-          target="_blank"
-        >
-          <img
-            src="/assets/javascript.svg"
-            class="logo vanilla"
-            alt="JavaScript logo"
-          />
-        </a>
+    #toolbar {
+      grid-column: 1 / span 3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #3a7bd5;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn.secondary {
+      background: #555;
+      color: #fff;
+    }
+    .btn.danger {
+      background: #e05555;
+      border-color: #c44;
+    }
+
+    #fileTree {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      overflow: auto;
+    }
+
+    #editorPanel {
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #editorHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      background: #292929;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    #code {
+      width: 100%;
+      height: calc(100% - 8px);
+      resize: none;
+      background: #0e0e0e;
+      color: #dcdcdc;
+      border: none;
+      outline: none;
+      font-family: ui-monospace,SFMono-Regular,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      font-size: 13px;
+      padding: 8px;
+    }
+
+    #consolePanel {
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #terminal {
+      height: 100%;
+      width: 100%;
+      background: #000;
+      color: #9cdcfe;
+      padding: 8px;
+      border-radius: 6px;
+      overflow: auto;
+      font-family: ui-monospace,SFMono-Regular,Monaco,Consolas,"Courier New",monospace;
+      font-size: 12.5px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .sectionTitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 6px 0 4px;
+    }
+
+    .treeItem {
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .treeItem.active {
+      background: #2a2a2a;
+    }
+    hr.sep {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="layout" aria-label="IDE layout" />
+
+  <script>
+    // Пример простого фронтенда для Tauri IDE
+    // В реальном проекте замените window.__tauriInvoked на tauri.invoke
+
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div id="toolbar">
+        <button class="btn" id="btnNew">New File</button>
+        <button class="btn" id="btnOpen">Open File</button>
+        <button class="btn" id="btnSave">Save</button>
+        <button class="btn" id="btnCompile">Compile</button>
+        <button class="btn" id="btnRun">Run</button>
+        <span style="margin-left:auto; color:#bbb; font-size:12px;">C++ IDE (Rust Tauri)</span>
       </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
+      <aside id="fileTree" aria-label="Файловая система" style="grid-row: 2 / span 1;">
+        <div class="sectionTitle">Проект</div>
+        <div id="tree"></div>
+      </aside>
+      <section id="editorPanel" aria-label="Редактор кода" style="grid-row: 2 / span 1;">
+        <div id="editorHeader">
+          <span>Editor - /src/main.cpp</span>
+          <span style="font-size:12px; color:#aaa;">C++</span>
+        </div>
+        <textarea id="code" spellcheck="false" autofocus></textarea>
+      </section>
+      <section id="consolePanel" aria-label="Консоль" style="grid-row: 3 / span 1;">
+        <div class="sectionTitle">Console</div>
+        <div id="terminal"></div>
+      </section>
+    `;
 
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
-    </main>
-  </body>
+    // Данные в памяти (для демо). В реальном приложении замените этим вызовы tauri.invoke
+    let currentPath = '/src/main.cpp';
+    let fileMap = {
+      '/src/main.cpp': `#include <iostream>
+int main() {
+  std::cout << "Hello from C++ in Tauri!" << std::endl;
+  return 0;
+}
+`,
+    };
+
+    // Простейшая эмуляция дерева файлов
+    function renderTree() {
+      const treeEl = document.getElementById('tree');
+      treeEl.innerHTML = '';
+      const root = document.createElement('div');
+      root.className = 'treeItem';
+      root.textContent = 'src/';
+      root.onclick = () => {
+        // загрузить существующий файл
+        loadFile('/src/main.cpp');
+      };
+      treeEl.appendChild(root);
+      // можно добавить more files
+    }
+
+    function loadFile(path) {
+      // Имитация вызова: tauri.invoke('readFile', { path })
+      const content = fileMap[path] ?? '';
+      document.getElementById('code').value = content;
+      currentPath = path;
+      highlightCode();
+      // пометка активного элемента (упрощенно)
+      document.querySelectorAll('.treeItem').forEach(el => el.classList.remove('active'));
+      // просто добавим активность к корню
+      // (для реального проекта можно хранить деревья и помечать конкретный файл)
+    }
+
+    function saveCurrentFile() {
+      const code = document.getElementById('code').value;
+      if (!currentPath) {
+        const p = prompt('Save as (path):', '/src/new.cpp');
+        if (!p) return;
+        currentPath = p;
+      }
+      // tauri.invoke('writeFile', { path: currentPath, content: code })
+      fileMap[currentPath] = code;
+      appendToTerminal(`Saved ${currentPath}\n`);
+    }
+
+    function compileProject() {
+      // tauri.invoke('compileProject', {})
+      appendToTerminal('Compiling project...\n');
+      // Демонстрация задержки
+      setTimeout(() => {
+        appendToTerminal('Build finished: 0 warnings, 0 errors\n');
+      }, 600);
+    }
+
+    function runBinary() {
+      // tauri.invoke('runBinary', {})
+      appendToTerminal('Running...\n');
+      setTimeout(() => {
+        appendToTerminal('Program output:\\nHello from C++ in Rust Tauri!\\n');
+      }, 400);
+    }
+
+    function appendToTerminal(text) {
+      const term = document.getElementById('terminal');
+      term.textContent += text;
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function highlightCode() {
+      // Для простоты оставим без подсветки
+      // Можно подключить CodeMirror/Monaco в будущем
+    }
+
+    // Кнопки
+    document.getElementById('btnNew').addEventListener('click', () => {
+      const name = prompt('New file path (e.g., /src/new.cpp):', '/src/new.cpp');
+      if (!name) return;
+      fileMap[name] = '';
+      currentPath = name;
+      document.getElementById('code').value = '';
+      renderTree();
+    });
+
+    document.getElementById('btnOpen').addEventListener('click', async () => {
+      // В реальном проекте вызвать tauri.openFileDialog
+      // const path = await tauri.invoke('openFileDialog', {});
+      const path = prompt('Enter path to open:', '/src/main.cpp');
+      if (path) {
+        loadFile(path);
+      }
+    });
+
+    document.getElementById('btnSave').addEventListener('click', () => {
+      saveCurrentFile();
+    });
+
+    document.getElementById('btnCompile').addEventListener('click', () => {
+      compileProject();
+    });
+
+    document.getElementById('btnRun').addEventListener('click', () => {
+      runBinary();
+    });
+
+    // Инициализация
+    renderTree();
+    loadFile('/src/main.cpp');
+
+    // Заглушка для окружения браузера без Tauri
+    if (!window.__TAURI_INVOKE__) {
+      window.__TAURI_INVOKE__ = async (cmd, args) => {
+        // Можно возвращать фиктивные значения для развёртывания в браузере
+        return new Promise((resolve) => {
+          if (cmd === 'readFile') {
+            resolve(fileMap[args.path] ?? '');
+          } else if (cmd === 'writeFile') {
+            fileMap[args.path] = args.content;
+            resolve();
+          } else if (cmd === 'compileProject') {
+            resolve('Build finished: 0 warnings, 0 errors');
+          } else if (cmd === 'runBinary') {
+            resolve('Program output:\\nHello from C++ in Rust Tauri!');
+          } else if (cmd === 'openFileDialog') {
+            resolve('/src/main.cpp');
+          } else {
+            resolve('');
+          }
+        });
+      };
+    }
+  </script>
+</body>
 </html>
